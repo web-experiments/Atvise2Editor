@@ -10,7 +10,7 @@ from pygments.styles import get_style_by_name
 from pygments.formatters import HtmlFormatter
 import subprocess
 from xml.dom import minidom
-from Config import ConfigReader
+from Config import ConfigReader,ConfigWriter
 from opcua.crypto import uacrypto
 import time
 
@@ -160,6 +160,7 @@ if __name__ == '__main__':
     value = ""
     selectNode = ""
     configreader = ConfigReader()
+    configwriter = ConfigWriter()
     prog.pushButton.setDisabled(True);
 
     def showValue(index):
@@ -178,6 +179,7 @@ if __name__ == '__main__':
     def connectatvise():
         global test
         At.setAddress(prog.ConnectCombo.currentText())
+        #configwriter.writeLastConnection(prog.ConnectCombo.currentText())
         At.connect()
         At.browse("ns=1;s=AGENT", "VariableTypes.ATVISE.Display")
         test = At.getDisplays()
@@ -209,6 +211,8 @@ if __name__ == '__main__':
             At.writeValue(selectNode,content)
             file.close();
 
+
+    prog.ConnectCombo.setCurrentText(configreader.getLastConnection())
     prog.ConnectButton.clicked.connect(connectatvise)
     prog.pushButton.clicked.connect(openFile)
     dialog.setWindowIcon(QtGui.QIcon('icon.png'))
