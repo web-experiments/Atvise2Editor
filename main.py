@@ -9,6 +9,7 @@ from pygments.lexers import get_lexer_by_name
 from pygments.styles import get_style_by_name
 from pygments.formatters import HtmlFormatter
 import subprocess
+from xml.dom import minidom
 from opcua.crypto import uacrypto
 
 
@@ -114,21 +115,21 @@ class OPCUAConnector():
         ET.register_namespace("", "http://www.w3.org/2000/svg")
         ET.register_namespace("atv","http://webmi.atvise.com/2007/svgext")
         ET.register_namespace("xlink", "http://www.w3.org/1999/xlink")
-        root_string = ET.tostring(root,encoding='UTF-8')
+        root_string = ET.tostring(root,encoding="UTF-8",method="html")
 
-        print(str(root_string))
+        print(root_string)
+        test=  minidom.parseString(ET.tostring(root,encoding="UTF-8")).toprettyxml()
 
         try:
             print(th.get_type_definition())
             tet = th.get_attribute(13)
             #th.set_writable(True)
-            val = str(root_string).replace("&lt;", "<")
+            val = str(test).replace("&lt;", "<")
             val2 = val.replace("&gt;", ">")
-
+            print(val2)
             length = int(len(val2)-1)
             print(length)
-            tet.Value.Value.Value = val2[2:length]
-
+            tet.Value.Value.Value = val2[2:length].strip()
 
             print(tet.Value.Value.Value);
             th.set_value(tet)
