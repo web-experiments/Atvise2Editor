@@ -10,7 +10,9 @@ from pygments.styles import get_style_by_name
 from pygments.formatters import HtmlFormatter
 import subprocess
 from xml.dom import minidom
+from Config import ConfigReader
 from opcua.crypto import uacrypto
+import time
 
 
 
@@ -157,6 +159,7 @@ if __name__ == '__main__':
     test = []
     value = ""
     selectNode = ""
+    configreader = ConfigReader()
     prog.pushButton.setDisabled(True);
 
     def showValue(index):
@@ -174,7 +177,7 @@ if __name__ == '__main__':
 
     def connectatvise():
         global test
-        At.setAddress(prog.URL.text())
+        At.setAddress(prog.ConnectCombo.currentText())
         At.connect()
         At.browse("ns=1;s=AGENT", "VariableTypes.ATVISE.Display")
         test = At.getDisplays()
@@ -186,11 +189,14 @@ if __name__ == '__main__':
             print("Unexpected error:", sys.exc_info()[0])
 
     def openFile():
-        file = open("newfile.js","w")
+        file = open("temp.js","w")
         file.write(ViewFormat.getScript(value))
+        if(prog.CopyCheckbox.isChecked()):
+            file_backup = open("backups/" + selectNode  + "-" + time.strftime("%y%m%d%H%M") + ".js","w")
+            file_backup.write(ViewFormat.getScript(value))
         file.close()
-        jsfile = "newfile.js"
-        editorPath = r'"C:\Program Files (x86)\Microsoft VS Code\Code.exe"'
+        jsfile = "temp.js"
+        editorPath = r''+configreader.getEditorPath()+''
         process = subprocess.Popen("%s %s" % (editorPath,jsfile))
         dialog.showMinimized()
 
@@ -198,7 +204,7 @@ if __name__ == '__main__':
         if process.returncode == 0:
             dialog.showNormal()
             print("editor closed")
-            file = open("newfile.js","r")
+            file = open("temp.js","r")
             content = file.read()
             At.writeValue(selectNode,content)
             file.close();
