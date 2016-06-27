@@ -1,6 +1,9 @@
+/*
+Test ob alles richtig eingebaut wird
+*/
 var test = "AGENT.OBJECTS.Test"
 webMI.data.subscribe(test,function(e){
-    alert("Wert:" + e.value)
+    console.log("Wert:" + e.value)
 })
 
 
@@ -12,4 +15,4 @@ var sI = setInterval(function(){
             webMI.data.write("AGENT.OBJECTS.Test",true);
         }
     })
-},1000)
+},50)

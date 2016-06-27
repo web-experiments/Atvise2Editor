@@ -143,7 +143,6 @@ class MyFirstGuiProgram(Ui_MainWindow):
     def __init__(self, dialog):
         Ui_MainWindow.__init__(self)
         self.setupUi(dialog)
-
     def addListtoView(self,list):
         for i in list:
           print(i)
@@ -180,6 +179,7 @@ if __name__ == '__main__':
         At.browse("ns=1;s=AGENT", "VariableTypes.ATVISE.Display")
         test = At.getDisplays()
         prog.addListtoView(test)
+        prog.Content.setReadOnly(True)
         try:
             prog.Nodes.clicked.connect(showValue)
         except:
@@ -205,5 +205,7 @@ if __name__ == '__main__':
 
     prog.ConnectButton.clicked.connect(connectatvise)
     prog.pushButton.clicked.connect(openFile)
+    dialog.setWindowIcon(QtGui.QIcon('icon.png'))
     dialog.show()
+
     sys.exit(app.exec_())
