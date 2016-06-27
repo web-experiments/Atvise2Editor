@@ -1,3 +1,15 @@
-alert("test");
+var test = "AGENT.OBJECTS.Test"
+webMI.data.subscribe(test,function(e){
+    alert("Wert:" + e.value)
+})
 
-console.log("test");
+
+var sI = setInterval(function(){
+    webMI.data.read(test,function(e){
+        if(e.value) {
+            webMI.data.write("AGENT.OBJECTS.Test",false)
+        } else {
+            webMI.data.write("AGENT.OBJECTS.Test",true);
+        }
+    })
+},1000)

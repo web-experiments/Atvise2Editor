@@ -126,10 +126,10 @@ class OPCUAConnector():
             #th.set_writable(True)
             val = str(test).replace("&lt;", "<")
             val2 = val.replace("&gt;", ">")
-            print(val2)
-            length = int(len(val2)-1)
+            val3 = val2.replace("&quot;",'"');
+            length = int(len(val3)-1)
             print(length)
-            tet.Value.Value.Value = val2[2:length].strip()
+            tet.Value.Value.Value = val3
 
             print(tet.Value.Value.Value);
             th.set_value(tet)
