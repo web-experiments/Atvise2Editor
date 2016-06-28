@@ -67,7 +67,6 @@ class OPCUAConnector():
     def connect(self):
             self.displays = []
             if self.connectionstatus == False:
-                print("Verbinde")
                 self.client.connect()
                 prog.ConnectButton.setText("Disconnect")
                 prog.ConnectCombo.setEnabled(False)
@@ -140,7 +139,6 @@ class MyFirstGuiProgram(Ui_MainWindow):
         self.setupUi(dialog)
 
     def addListtoView(self,list):
-        print(list)
         for i in list:
           self.Nodes.addItem(QListWidgetItem(str(i)))
 
@@ -213,5 +211,5 @@ if __name__ == '__main__':
     prog.pushButton.clicked.connect(openFile)
     dialog.setWindowIcon(QtGui.QIcon('icon.png'))
     dialog.show()
-
     sys.exit(app.exec_())
+

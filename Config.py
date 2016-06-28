@@ -32,5 +32,4 @@ class ConfigWriter():
         listConnection.append(connection)
         config.set("Editor", "LastConnection", str(listConnection).replace("'","").replace("[","").replace("]","").replace(" ",""))
         with open('config.ini', 'w') as f:
-            print(config.sections())
             config.write(f)
