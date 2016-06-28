@@ -34,6 +34,7 @@ from opcua import ua
 from Atvise import Ui_MainWindow
 
 
+
 class ViewFormatter():
     def format(self,value):
             script = self.getScript(value)
@@ -58,6 +59,7 @@ class OPCUAConnector():
     def __init__(self):
         self.client = ""
         self.displays = []
+        self.connectionstatus = False
 
     def setAddress(self,adress):
         self.client = Client(adress)
@@ -66,23 +68,24 @@ class OPCUAConnector():
     def connect(self):
         try:
             self.display = []
-            #self.client.set_security(self.client.server_policy_uri(ua.MessageSecurityMode.None_), "uaclient_untrustedRootCert.der", "uaclient_privateKey.pem")
-            self.client.connect()
-            #print(self.client.load_client_certificate("../uaclient_untrustedRootCert.der"))
-            #print(self.client.load_private_key("../uaclient_privateKey.pem"))
-            #print(self.client.user_certificate);
+            if self.connectionstatus == False:
+                self.client.connect()
+                prog.ConnectButton.setText("Disconnect")
+                prog.ConnectCombo.setEnabled(False)
+                self.connectionstatus = True
+            else:
+                self.close()
+                self.connectionstatus = False
 
 
         except:
             print("Unexpected error:", sys.exc_info())
-
             print("Keine Verbindung möglich")
+            self.connectionstatus = False
 
-
-    def disconnect(self):
+    def close(self):
         try:
             self.client.disconnect()
-
         except ConnectionError:
             print("Es besteht keine Verbindung")
 
@@ -179,7 +182,7 @@ if __name__ == '__main__':
     def connectatvise():
         global test
         At.setAddress(prog.ConnectCombo.currentText())
-        #configwriter.writeLastConnection(prog.ConnectCombo.currentText())
+        configwriter.writeLastConnection(prog.ConnectCombo.currentText())
         At.connect()
         At.browse("ns=1;s=AGENT", "VariableTypes.ATVISE.Display")
         test = At.getDisplays()
@@ -212,8 +215,9 @@ if __name__ == '__main__':
             file.close();
 
 
-    prog.ConnectCombo.setCurrentText(configreader.getLastConnection())
+    prog.ConnectCombo.addItems(configreader.getLastConnection())
     prog.ConnectButton.clicked.connect(connectatvise)
+
     prog.pushButton.clicked.connect(openFile)
     dialog.setWindowIcon(QtGui.QIcon('icon.png'))
     dialog.show()

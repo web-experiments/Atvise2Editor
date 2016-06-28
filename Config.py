@@ -17,15 +17,23 @@ class ConfigReader():
         return config["Editor"]["Arguments"]
 
     def getLastConnection(self):
-        return config["Editor"]["LastConnection"]
+        listConnection = str(config["Editor"]["LastConnection"]).split(',')
+        print(listConnection[0])
+        return listConnection
 
 class ConfigWriter():
     def __init__(self):
         config.read("config.ini")
 
     def writeLastConnection(self,connection):
-        cfgfile = open("config.ini","w")
-        config.set("Editor","LastConnection",str(connection))
-        print(config.sections())
-        cfgfile.write(config)
-        cfgfile.close()
+        listConnection = str(config["Editor"]["LastConnection"]).split(',')
+        print(len(listConnection))
+        print(connection in listConnection)
+        if len(listConnection) > 10:
+            del listConnection[0]
+
+        listConnection.append(connection)
+        config.set("Editor", "LastConnection", str(listConnection).replace("'", "")[1:-1])
+        with open('config.ini', 'w') as f:
+            print(config.sections())
+            config.write(f)
