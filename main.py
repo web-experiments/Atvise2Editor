@@ -38,7 +38,6 @@ from Atvise import Ui_MainWindow
 class ViewFormatter():
     def format(self,value):
             script = self.getScript(value)
-            print("test")
             if script:
                 HtmlFormatter(style='paraiso-dark').style
                 lexer = get_lexer_by_name("javascript", stripall=True)
@@ -66,9 +65,9 @@ class OPCUAConnector():
 
 
     def connect(self):
-        try:
-            self.display = []
+            self.displays = []
             if self.connectionstatus == False:
+                print("Verbinde")
                 self.client.connect()
                 prog.ConnectButton.setText("Disconnect")
                 prog.ConnectCombo.setEnabled(False)
@@ -78,16 +77,14 @@ class OPCUAConnector():
                 self.connectionstatus = False
 
 
-        except:
-            print("Unexpected error:", sys.exc_info())
-            print("Keine Verbindung möglich")
-            self.connectionstatus = False
 
     def close(self):
-        try:
-            self.client.disconnect()
-        except ConnectionError:
-            print("Es besteht keine Verbindung")
+            prog.ConnectCombo.setEnabled(True)
+            prog.Nodes.clear()
+            prog.Content.clear()
+            prog.ConnectButton.setText("Connect")
+            prog.pushButton.setEnabled(False)
+
 
     def browse(self,start,filtertype):
         address = start
@@ -110,11 +107,9 @@ class OPCUAConnector():
 
     def writeValue(self,item,value):
         th = self.client.get_node(item)
-        print(value);
         root = ET.fromstring(self.getValue(item))
         for node in root.iter('{http://www.w3.org/2000/svg}script'):
             node.text = '<![CDATA[' + value + ']]>';
-            print(node.text);
 
         #  node.text = '<![CDATA['.encode() + value + ']]>';
         ET.register_namespace("", "http://www.w3.org/2000/svg")
@@ -122,21 +117,16 @@ class OPCUAConnector():
         ET.register_namespace("xlink", "http://www.w3.org/1999/xlink")
         root_string = ET.tostring(root,encoding="UTF-8",method="html")
 
-        print(root_string)
         test=  minidom.parseString(ET.tostring(root,encoding="UTF-8")).toprettyxml()
 
         try:
-            print(th.get_type_definition())
             tet = th.get_attribute(13)
             #th.set_writable(True)
             val = str(test).replace("&lt;", "<")
             val2 = val.replace("&gt;", ">")
             val3 = val2.replace("&quot;",'"');
             length = int(len(val3)-1)
-            print(length)
             tet.Value.Value.Value = val3
-
-            print(tet.Value.Value.Value);
             th.set_value(tet)
 
 
@@ -148,9 +138,10 @@ class MyFirstGuiProgram(Ui_MainWindow):
     def __init__(self, dialog):
         Ui_MainWindow.__init__(self)
         self.setupUi(dialog)
+
     def addListtoView(self,list):
+        print(list)
         for i in list:
-          print(i)
           self.Nodes.addItem(QListWidgetItem(str(i)))
 
 if __name__ == '__main__':
@@ -164,7 +155,7 @@ if __name__ == '__main__':
     selectNode = ""
     configreader = ConfigReader()
     configwriter = ConfigWriter()
-    prog.pushButton.setDisabled(True);
+    prog.pushButton.setEnabled(False)
 
     def showValue(index):
         global value
@@ -181,17 +172,19 @@ if __name__ == '__main__':
 
     def connectatvise():
         global test
+        test = []
         At.setAddress(prog.ConnectCombo.currentText())
         configwriter.writeLastConnection(prog.ConnectCombo.currentText())
         At.connect()
-        At.browse("ns=1;s=AGENT", "VariableTypes.ATVISE.Display")
-        test = At.getDisplays()
-        prog.addListtoView(test)
-        prog.Content.setReadOnly(True)
-        try:
-            prog.Nodes.clicked.connect(showValue)
-        except:
-            print("Unexpected error:", sys.exc_info()[0])
+        if At.connectionstatus == True:
+            At.browse("ns=1;s=AGENT", "VariableTypes.ATVISE.Display")
+            test = At.getDisplays()
+            prog.addListtoView(test)
+            prog.Content.setReadOnly(True)
+            try:
+                prog.Nodes.clicked.connect(showValue)
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
 
     def openFile():
         file = open("temp.js","w")
@@ -208,7 +201,6 @@ if __name__ == '__main__':
         stdoutdata, stderrdata = process.communicate()
         if process.returncode == 0:
             dialog.showNormal()
-            print("editor closed")
             file = open("temp.js","r")
             content = file.read()
             At.writeValue(selectNode,content)

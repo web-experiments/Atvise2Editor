@@ -221,6 +221,8 @@ class Client(object):
         High level method
         Close session, secure channel and socket
         """
+
+        print("disconnect in ua")
         self.close_session()
         self.close_secure_channel()
         self.disconnect_socket()

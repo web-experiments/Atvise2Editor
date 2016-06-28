@@ -18,7 +18,6 @@ class ConfigReader():
 
     def getLastConnection(self):
         listConnection = str(config["Editor"]["LastConnection"]).split(',')
-        print(listConnection[0])
         return listConnection
 
 class ConfigWriter():
@@ -27,13 +26,11 @@ class ConfigWriter():
 
     def writeLastConnection(self,connection):
         listConnection = str(config["Editor"]["LastConnection"]).split(',')
-        print(len(listConnection))
-        print(connection in listConnection)
         if len(listConnection) > 10:
             del listConnection[0]
 
         listConnection.append(connection)
-        config.set("Editor", "LastConnection", str(listConnection).replace("'", "")[1:-1])
+        config.set("Editor", "LastConnection", str(listConnection).replace("'","").replace("[","").replace("]","").replace(" ",""))
         with open('config.ini', 'w') as f:
             print(config.sections())
             config.write(f)
