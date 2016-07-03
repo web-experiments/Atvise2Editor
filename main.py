@@ -153,7 +153,7 @@ if __name__ == '__main__':
     selectNode = ""
     configreader = ConfigReader()
     configwriter = ConfigWriter()
-    prog.pushButton.setEnabled(False)
+
 
     def showValue(index):
         global value
@@ -179,10 +179,8 @@ if __name__ == '__main__':
             test = At.getDisplays()
             prog.addListtoView(test)
             prog.Content.setReadOnly(True)
-            try:
-                prog.Nodes.clicked.connect(showValue)
-            except:
-                print("Unexpected error:", sys.exc_info()[0])
+            prog.Nodes.clicked.connect(showValue)
+
 
     def openFile():
         file = open("temp.js","w")
@@ -207,7 +205,7 @@ if __name__ == '__main__':
 
     prog.ConnectCombo.addItems(configreader.getLastConnection())
     prog.ConnectButton.clicked.connect(connectatvise)
-
+    prog.pushButton.setEnabled(False)
     prog.pushButton.clicked.connect(openFile)
     dialog.setWindowIcon(QtGui.QIcon('icon.png'))
     dialog.show()

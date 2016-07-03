@@ -7,6 +7,8 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox, QMessageBox
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -82,4 +84,8 @@ class Ui_MainWindow(object):
         self.menuMain.setTitle(_translate("MainWindow", "Main"))
         self.actionEinstellungen.setText(_translate("MainWindow", "Einstellungen"))
         self.actionBeenden.setText(_translate("MainWindow", "Beenden"))
+
+
+
+
 
